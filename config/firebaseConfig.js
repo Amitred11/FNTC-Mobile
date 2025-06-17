@@ -4,15 +4,13 @@ import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
 import { getDatabase } from "firebase/database";
 import { getStorage } from "firebase/storage";
 // Your Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyBFttAnDnUb0RG_DXEpbhh5ifrZ-Mnyz-4",
-  authDomain: "fibear-20101.firebaseapp.com",
-  projectId: "fibear-20101",
-  storageBucket: "fibear-20101.appspot.com",
-  messagingSenderId: "973096250612",
-  appId: "1:973096250612:web:bcaca4ed258e03f4ec02a1",
-  measurementId: "G-ZBBJ4Z3SKE",
-  databaseURL: "https://fibear-20101-default-rtdb.asia-southeast1.firebasedatabase.app/",
+    export const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
 };
 
 const app = initializeApp(firebaseConfig);

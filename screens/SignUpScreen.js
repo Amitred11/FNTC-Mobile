@@ -10,9 +10,9 @@ import {
   TouchableOpacity,
   Platform,
   Modal,
+  Keyboard,
 } from 'react-native';
 import {
-  Button,
   TextInput,
   Checkbox,
   Provider as PaperProvider,
@@ -25,8 +25,9 @@ import * as Linking from 'expo-linking';
 import { auth } from '../config/firebaseConfig';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth"; // Import for Google
-import { FacebookAuthProvider, signInWithRedirect, getRedirectResult } from "firebase/auth"; // Import for Facebook
 import { updateProfile } from 'firebase/auth'; // Import updateProfile for setting display name
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
+
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 const IMAGE_HEIGHT = SCREEN_HEIGHT * 0.8;
@@ -34,6 +35,7 @@ const CARD_HEIGHT_FACTOR = 0.7;
 const CARD_HEIGHT = SCREEN_HEIGHT * CARD_HEIGHT_FACTOR;
 
 export default function SignUpScreen() {
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const [checked, setChecked] = useState(false);
   const route = useRoute();
   const [isLogin, setIsLogin] = useState(route.params?.screen === 'Login' || false); // Default to Sign Up
@@ -48,6 +50,51 @@ export default function SignUpScreen() {
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false); // State for modal visibility
   const [modalMessage, setModalMessage] = useState(''); // State for the modal message
+  const opacity = useRef(new Animated.Value(1)).current;
+  const [rememberMe, setRememberMe] = useState(false); // State for whether to remember
+
+  const translateY = useRef(new Animated.Value(0)).current;
+
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => {
+        setIsKeyboardVisible(true);
+          Animated.timing(opacity, { // Fade out surrounding text
+          toValue: 0,
+          duration: 200, // Adjust duration for the fade-out speed
+          useNativeDriver: true,
+        }).start();
+      }
+    );
+
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        setIsKeyboardVisible(false);
+        Animated.timing(opacity, { // Fade in surrounding text
+          toValue: 1,
+          duration: 200, // Adjust duration for the fade-in speed
+          useNativeDriver: true,
+        }).start();
+      }
+    );
+
+    // Animation triggers based on keyboard visibility
+    Animated.spring(translateY, {
+      toValue: isKeyboardVisible ? -100 : 0, // Adjust -150 to fine-tune the upward shift
+      useNativeDriver: true,
+    }).start();
+
+
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
+  }, [isKeyboardVisible, translateY, opacity]);
+
+
 
   useEffect(() => {
     Animated.timing(cardAnim, {
@@ -68,6 +115,33 @@ export default function SignUpScreen() {
       useNativeDriver: true,
     }).start();
   };
+
+  useEffect(() => {
+    // Load saved credentials on component mount
+    loadSavedCredentials();
+  }, [isLogin]); // Run only when isLogin changes
+
+    const loadSavedCredentials = async () => {
+        if (!isLogin) return; // Only load if on the login screen
+        try {
+            const storedEmail = await AsyncStorage.getItem('userEmail');
+            const storedPassword = await AsyncStorage.getItem('userPassword');
+            const storedRememberMe = await AsyncStorage.getItem('rememberMe');
+
+            if (storedEmail !== null && storedPassword !== null && storedRememberMe === 'true') {
+                setemail(storedEmail);
+                setPassword(storedPassword);
+                setRememberMe(true); // Ensure this is set correctly
+            } else {
+              setRememberMe(false); // Or if it's false, make sure you're clearing the values
+            }
+
+        } catch (error) {
+            console.error('Error loading credentials:', error);
+            setModalMessage('Failed to load saved login details.');
+            setModalVisible(true);
+        }
+    };
 
   const handleSignUp = async () => {
     if (!Name && !email && !password && !confirmPassword) {
@@ -138,15 +212,48 @@ export default function SignUpScreen() {
       console.log("Login successful!");
       setModalMessage("Login Successful!");
       setModalVisible(true);
-      // Clear form fields
-      setemail('');
-      setPassword('');
+
+      if (rememberMe) {
+          await saveCredentials(email, password);
+      } else {
+          await clearCredentials();
+      }
+
+      // Clear form fields after successful login (optional, since the loadSavedCredentials will pre-populate)
+      //setemail('');
+      //setPassword('');
+
     } catch (error) {
       console.error("Login error:", error.message);
       setModalMessage(`Login failed: ${error.message}`); // Display the error message from Firebase
       setModalVisible(true);
     }
   };
+
+
+    const saveCredentials = async (userEmail, userPassword) => {
+        try {
+            await AsyncStorage.setItem('userEmail', userEmail);
+            await AsyncStorage.setItem('userPassword', userPassword);
+            await AsyncStorage.setItem('rememberMe', 'true');
+        } catch (error) {
+            console.error('Error saving credentials:', error);
+            setModalMessage('Failed to save login details.');
+            setModalVisible(true);
+        }
+    };
+
+    const clearCredentials = async () => {
+        try {
+            await AsyncStorage.removeItem('userEmail');
+            await AsyncStorage.removeItem('userPassword');
+            await AsyncStorage.removeItem('rememberMe');
+        } catch (error) {
+            console.error('Error clearing credentials:', error);
+            setModalMessage('Failed to clear login details.');
+            setModalVisible(true);
+        }
+    };
 
   // Google Sign-In
   const handleGoogleSignIn = async () => {
@@ -175,42 +282,6 @@ export default function SignUpScreen() {
       setModalVisible(true);
     }
   };
-
-  // Facebook Sign-In (using redirect - recommended for web/mobile)
-    const handleFacebookSignIn = async () => {
-    try {
-        const provider = new FacebookAuthProvider();
-        await signInWithRedirect(auth, provider);
-        // You'll need to handle the redirect result on app load or in a useEffect
-    } catch (error) {
-        console.error("Facebook sign-in initiation error:", error);
-        setModalMessage(`Facebook sign-in initiation failed: ${error.message}`);
-        setModalVisible(true);
-    }
-};
-
-    useEffect(() => {
-        const handleFacebookRedirectResult = async () => {
-            try {
-                const result = await getRedirectResult(auth);
-                if (result) {
-                    const credential = FacebookAuthProvider.credentialFromResult(result);
-                    const token = credential.accessToken;
-                    const user = result.user;
-                    console.log("Facebook sign-in successful:", user);
-                    setModalMessage("Facebook Sign-in Successful!");
-                    setModalVisible(true);
-                    // Optionally, navigate or take further actions
-                }
-            } catch (error) {
-                console.error("Facebook sign-in redirect result error:", error);
-                setModalMessage(`Facebook sign-in failed: ${error.message}`);
-                setModalVisible(true);
-            }
-        };
-        handleFacebookRedirectResult(); // Call this when the component mounts.
-    }, []);
-
 
   const cardY = cardAnim.interpolate({
     inputRange: [0, 1],
@@ -272,28 +343,33 @@ export default function SignUpScreen() {
             style={styles.logo}
             resizeMode="contain"
           />
+          <Animated.View style={{ opacity }}>
           <Text style={{ fontSize: 17, textAlign: 'center', fontWeight: 'bold', marginRight: 25, marginLeft: 25 }}>
             {isLogin ? 'Welcome Back!' : 'Your journey starts here take the first step'}
           </Text>
-          <View style={styles.tabContainer}>
-            <TouchableOpacity
-              style={[styles.tab, !isLogin && styles.activeTab]}
-              onPress={() => isLogin && toggleMode()}
-            >
-              <Text style={[styles.tabText, !isLogin && styles.activeTabText]}>Sign Up</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.tab, isLogin && styles.activeTab]}
-              onPress={() => !isLogin && toggleMode()}
-            >
-              <Text style={[styles.tabText, isLogin && styles.activeTabText]}>Login</Text>
-            </TouchableOpacity>
-          </View>
+
+        <View style={[styles.tabContainer, !isLogin ? styles.tabContainerSignUp : styles.tabContainerLogin]}>
+          <TouchableOpacity
+            style={[styles.tab, !isLogin && styles.activeTab]}
+            onPress={isLogin ? toggleMode : null}
+          >
+            <Text style={[styles.tabText, !isLogin && styles.activeTabText]}>Sign Up</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.tab, isLogin && styles.activeTab]}
+            onPress={!isLogin ? toggleMode : null}
+          >
+            <Text style={[styles.tabText, isLogin && styles.activeTabText]}>Login</Text>
+          </TouchableOpacity>
+        </View>
+          </Animated.View>
 
           <Animated.View style={[styles.formContainer, { justifyContent: 'center', alignItems: 'center', flex: 1 }]}>
             {!isLogin ? (
               <>
+              <Animated.View style={[styles.formaContainer, { transform: [{ translateY }] }]}>
                 <Text style={styles.sectionTitle}>Create your account</Text>
+
                 <PaperProvider>
 
                   <LinearGradient
@@ -372,6 +448,7 @@ export default function SignUpScreen() {
                 </PaperProvider>
 
 
+
                 <View style={styles.checkboxRow}>
                   <Checkbox
                     status={checked ? 'checked' : 'unchecked'}
@@ -387,6 +464,7 @@ export default function SignUpScreen() {
                 >
                   <Text style={styles.createButtonLabel}>Create Account </Text>
                 </TouchableOpacity>
+                </Animated.View>
 
 
                 <View style={styles.separator} /><Text style={styles.orText}>Or Login with</Text><View style={styles.separatorL} />
@@ -395,7 +473,7 @@ export default function SignUpScreen() {
                         <Image source={require('../assets/images/Google_2015_logo.svg.png')} style={styles.icon} />
                     </TouchableOpacity>
 
-                    <TouchableOpacity onPress={handleFacebookSignIn}>
+                    <TouchableOpacity>
                         <Image source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/512px-Facebook_Logo_%282019%29.png' }} style={styles.icon} />
                     </TouchableOpacity>
 
@@ -410,7 +488,9 @@ export default function SignUpScreen() {
             ) : (
               <>
                 <View style={[styles.form, { width: '100%', maxWidth: 350, alignItems: 'center' }]}>
+                <Animated.View style={[styles.formaContainer, { transform: [{ translateY }] }]}>
                   <Text style={styles.loginTitle}>Log In</Text>
+
                   <PaperProvider>
                     {/* First and Last Name in a row */}
 
@@ -453,10 +533,11 @@ export default function SignUpScreen() {
                       <Ionicons name={showPassword ? 'eye' : 'eye-off'} size={24} color="#777" />
                     </TouchableOpacity>
                   </PaperProvider>
+
                   <View style={styles.LogincheckboxRow}>
                     <Checkbox
-                      status={checked ? 'checked' : 'unchecked'}
-                      onPress={() => setChecked(!checked)}
+                      status={rememberMe ? 'checked' : 'unchecked'}  // Use rememberMe state
+                      onPress={() => setRememberMe(!rememberMe)}  // Toggle rememberMe
                     />
                     <Text style={styles.LogincheckboxText}>Remember Me!</Text>
                   </View>
@@ -467,13 +548,14 @@ export default function SignUpScreen() {
                   >
                     <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 13, textAlign: 'center', paddingVertical: 2, }}> Log In </Text>
                   </TouchableOpacity>
+                  </Animated.View>
                   <View style={styles.Loginseparator} /><Text style={styles.LorText}>Sign in with</Text><View style={styles.Lseparator} />
                   <View style={styles.LoginsocialRow}>
                     <TouchableOpacity onPress={handleGoogleSignIn}>
                         <Image source={require('../assets/images/Google_2015_logo.svg.png')} style={styles.icon} />
                     </TouchableOpacity>
 
-                    <TouchableOpacity onPress={handleFacebookSignIn}>
+                    <TouchableOpacity>
                         <Image source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/512px-Facebook_Logo_%282019%29.png' }} style={styles.icon} />
                     </TouchableOpacity>
                     <Image source={require('../assets/images/Apple_logo_black.svg.png')} style={styles.icon} />
@@ -578,6 +660,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     borderRadius: 10,
     right: 62,
+    bottom: 15,
   },
   loginTitle: {
     marginTop: -50,
@@ -586,7 +669,7 @@ const styles = StyleSheet.create({
     fontWeight: 900,
     borderRadius: 10,
     right: 112,
-    bottom: 24,
+    bottom: -5,
   },
   input: {
     width: 280,
@@ -612,7 +695,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 10,
-    top: 60,
+    top: 80,
+    right: 20,
   },
   LogincheckboxText: {
     flex: 1,
@@ -634,12 +718,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     boxShadow: '0 5px 10px rgba(0, 0, 0, 0.4)',
     height: 46,
-    top: 60,
+    top: 80,
   },
   LogineyeIcon: {
     position: 'absolute',
     right: 20,
-    top: 17,
+    top: 46,
     zIndex: 10,
   },
   createButton: {
@@ -651,7 +735,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     boxShadow: '0 5px 10px rgba(0, 0, 0, 0.4)',
-    top: 100,
+    top: 155,
   },
   createButtonLabel: {
     fontSize: 13,
@@ -687,7 +771,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(198, 205, 218, 1)',
     borderRadius: 30,
     overflow: 'hidden',
+    alignContent: 'center'
   },
+    tabContainerSignUp: {
+      left: 30, //Apply the left margin here when !isLogin
+  },
+
   tab: {
     flex: 1,
     paddingVertical: 9,
@@ -711,6 +800,13 @@ const styles = StyleSheet.create({
     padding: 20,
     zIndex: 2,
   },
+    formaContainer: {
+    width: '100%',
+    alignItems: 'center',
+    padding: 20,
+    zIndex: 2,
+    bottom: 32,
+  },
   form: {
     width: '100%',
     maxWidth: 350,
@@ -726,7 +822,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 10,
-    top: 90,
+    top: 155,
+    right: 20,
   },
   checkboxText: {
     flex: 1,
@@ -755,12 +852,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#ccc',
     marginVertical: 20,
     right: 81,
-    top: 146,
+    top: 107,
   },
   LorText: {
     textAlign: 'center',
     marginVertical: 75,
-    top: 40,
+    top: 1,
     fontSize: 12,
     color: '#666',
   },
@@ -768,7 +865,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     gap: 20,
-    bottom: -10,
+    bottom: 30,
   },
   Lseparator: {
     width: '30%',
@@ -776,7 +873,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ccc',
     marginVertical: -10,
     left: 79,
-    bottom: 32,
+    bottom: 71,
   },
   loginLinkText: {
     color: '#00BBD6',
@@ -804,7 +901,7 @@ const styles = StyleSheet.create({
     top: 2,
     justifyContent: 'center', // Center the input inside the gradient
     alignItems: 'center',
-    top: -27,
+    top: 2,
   },
   container: {
     flex: 1,
@@ -815,7 +912,7 @@ const styles = StyleSheet.create({
   footerLinks: {
     flexDirection: 'row',
     marginTop: 10,
-    top: 50,
+    top: 20,
   },
   link: {
     color: '#999',

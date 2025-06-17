@@ -1,174 +1,163 @@
-Generated markdown
+Of course. Here is the revised `README.md` file, focusing entirely on the design, color palette, and visual identity of the FiBear Network Corp. mobile app, with all code and license information removed.
+
+***
+
 # FiBear Network Corp. Mobile App
 
 ## Overview
 
-This mobile application, developed using React Native and Expo, provides a user-friendly interface for managing FiBear Network Corp. services.  It leverages Firebase for user authentication, and potentially, future features such as user data management and service interactions. This app provides features like a splash screen, sign-up, login, and a home screen.
+This mobile application provides a user-friendly interface for FiBear Network Corp. services. It is built around a modern, clean, and trustworthy design system to ensure a seamless and intuitive user experience. The app's visual identity is crafted to be welcoming and professional, guiding users effortlessly through authentication and into the main application.
 
-## Features
+## Design & User Experience
 
-*   **Splash Screen:** An initial splash screen to improve the user experience.
-*   **User Authentication:**
-    *   Sign-up functionality with email, password, and a terms and conditions agreement.
-    *   Login functionality using email and password with a "Remember Me" option.
-    *   Google Sign-In (with basic integration).
-*   **User Interface:**
-    *   Get Started Screen with options for Sign Up and Login.
-    *   Sign Up Screen with form fields for name, email, password, and confirm password.
-    *   Login Screen for email and password-based authentication.
-    *   Home Screen to display user information and other relevant content (with a skeleton loader for a smooth experience).
-    *   Modals for displaying messages, like successful sign-ups and log-ins.
-    *   Animated transitions and UI elements for improved user engagement.
-    *   A drawer-style menu for navigation.
-*   **Navigation:**
-    *   Uses React Navigation for screen management.
-*   **Data Persistence:** Uses `AsyncStorage` to store user login credentials (email, password, and a rememberMe flag).
-*   **Firebase Integration:**
-    *   Firebase Authentication for user management, including sign-up, login, and Google Sign-In.
-    *   Firebase Config for project setup.
-*   **Animations and Visual Enhancements:**
-    *   Uses `react-native-animatable` for animations.
-    *   Gradients used with `expo-linear-gradient`.
+The app's design philosophy is centered on clarity, consistency, and a professional aesthetic. We use a defined color palette, modern typography, and clean iconography to create a cohesive and pleasant user journey.
 
-## Technologies Used
+### Color Palette
 
-*   **React Native:** A JavaScript framework for building native mobile applications.
-*   **Expo:** A framework built on top of React Native, simplifying development with pre-built components and tools.
-*   **Firebase:** A comprehensive platform for backend services:
-    *   **Firebase Authentication:** User authentication (email/password, Google).
-*   **React Navigation:** For screen navigation and management.
-*   **React Native Paper:** for UI elements like `TextInput`, `Checkbox`.
-*   **Expo-Linear-Gradient:** for creating gradient backgrounds.
-*   **Expo Auth Session:**  For Google Sign-In (although the integration here is basic).
-*   **React Native Animatable:** for animations and effects.
-*   **AsyncStorage:** For storing user credentials.
-*   **Expo-Font** for custom fonts.
-*   **React Native Vector Icons** for icons.
+The color scheme is designed to be calming yet professional, building user trust. It uses a primary teal for actionable items, a deep navy for text, and soft neutrals for backgrounds.
+
+| Color       | Hex Code  | Usage                                                              |
+| :---------- | :-------- | :----------------------------------------------------------------- |
+| **Primary** | `#0aada8` | Buttons, headers, active links, and key interactive elements.      |
+| **Accent**  | `#e88832` | Secondary actions, highlights, or links like "Terms of Service".   |
+| **Text**    | `#051d5f` | Main headings and important text to create strong visual hierarchy. |
+| **Body**    | `#333333` | Standard body text and labels for excellent readability.           |
+| **Neutral** | `#f9fafd` | Main screen backgrounds for a clean, airy feel.                    |
+| **White**   | `#ffffff` | Card backgrounds and button text.                                  |
+| **Grey**    | `#cccccc` | Borders and inactive elements.                                     |
+
+### Typography
+
+The app utilizes a combination of a unique display font for branding and a highly readable sans-serif font for all other content.
+
+*   **Headings & Logo Text:** `Kufam` (Semi-Bold Italic) - A distinctive font used for screen titles and branding to give the app a unique character.
+*   **Body & UI Text:** `Lato` (Regular) - A clean and modern sans-serif font chosen for its high legibility on mobile screens. Used for input fields, labels, buttons, and all paragraph text.
+
+### Iconography
+
+Icons are used to enhance usability and provide quick visual cues. We use the **FontAwesome** and **AntDesign** icon sets from `react-native-vector-icons` for a consistent and professional look.
+
+*   **Style:** Solid, line-art icons that are simple and universally understood.
+*   **Usage:** Used in input fields (`user`, `lock`), social login buttons (`google`), and the navigation drawer menu.
+
+### Layout & Spacing
+
+A consistent spacing and layout system is used throughout the app to create a sense of order and balance.
+*   **Padding:** Generous padding is used within screens (e.g., `20px`) and components to avoid a cluttered look.
+*   **Vertical Rhythm:** Consistent margins (`10px`, `15px`, `25px`) are used between elements to guide the user's eye down the screen.
+*   **Centering:** Most screens use a centered layout to focus the user's attention on the primary task.
+
+---
+
+## Key UI Component Designs
+
+### Input Fields (`FormInput`)
+
+*   **Appearance:** Clean, rectangular fields with a light grey (`#ccc`) 1px border and a white background.
+*   **Icon:** An icon is placed on the left side within a bordered container, providing a visual cue for the input type (e.g., a user icon for email, a lock for password).
+*   **State:** When focused, the border could change color to the primary teal (`#0aada8`) to indicate an active state.
+*   **Text:** Uses `Lato-Regular` font for clear readability.
+
+### Buttons (`FormButton`, `SocialButton`)
+
+*   **Primary Button:**
+    *   **Background:** Solid primary color (`#2e64e5` or `#0aada8`).
+    *   **Text:** Bold, white text for high contrast.
+    *   **Shape:** Rectangular with slightly rounded corners.
+    *   **Action:** Used for the most important actions, like "Sign In" or "Sign Up".
+
+*   **Social Login Button (Google):**
+    *   **Background:** A light, tinted background (`#f5e7ea`) to differentiate it from the primary action.
+    *   **Icon:** The official Google brand icon on the left.
+    *   **Text:** The button text ("Sign In with Google") uses the corresponding brand color (`#de4d41`).
+
+---
+
+## Screen Designs (Visual Description)
+
+### Login & Signup Screens
+
+These screens present a clean, focused, and welcoming entry point to the app.
+
+*   **Background:** A soft, neutral off-white (`#f9fafd`).
+*   **Logo:** The "FiBear" logo is prominently displayed at the top, followed by the app name in the `Kufam` display font.
+*   **Forms:** The input fields are neatly stacked and centered, with clear placeholder text.
+*   **Actions:** A bold, primary-colored "Sign In" or "Sign Up" button is the main call-to-action. Secondary actions like "Forgot Password?" and links to the other screen are presented as understated text links, using the accent color to draw attention without competing with the primary button.
+
+### Home Screen
+
+After logging in, the user is greeted with a clean and organized home screen.
+
+*   **Header:** A header bar in the primary teal color (`#0aada8`) with a white title ("Home") and a hamburger icon to open the navigation drawer.
+*   **Content Area:** The main content area has the neutral background color. A welcome message is displayed at the top in a large, bold font.
+*   **User Info:** The user's email is displayed clearly, confirming their identity.
+*   **Actions:** A "Logout" button is available, styled as a primary button. The screen is designed to be easily extendable with cards or lists for other services.
+
+### Drawer Navigation Menu
+
+The drawer provides easy access to different parts of the app.
+
+*   **Appearance:** Slides out from the left side, overlaying the home screen.
+*   **Background:** Can be a solid color, like white or a dark navy, for contrast.
+*   **Items:** A list of navigation links (e.g., "Home," "Profile," "Settings"), each with an icon on the left and a text label.
+*   **Active State:** The currently active screen is highlighted, often with a different background color or a bolded text label.
+
+## Technologies Used for Design
+
+*   **React Native Elements:** Provides a set of pre-styled, customizable UI components.
+*   **react-native-vector-icons:** The source for our clean and professional icon sets.
+*   **expo-font:** Used to load our custom brand fonts (`Kufam` and `Lato`).
 
 ## Prerequisites
 
 *   **Node.js and npm/yarn:** Make sure you have Node.js and either npm or yarn installed on your development machine.
 *   **Expo CLI:** Install the Expo command-line interface globally: `npm install -g expo-cli`
-*   **Firebase Account:**  Create a Firebase account ([https://firebase.google.com/](https://firebase.google.com/)).
+*   **Firebase Account:** Create a Firebase account ([https://firebase.google.com/](https://firebase.google.com/)).
 *   **Firebase Project:** Create a Firebase project in the Firebase console.
-*   **Google Cloud Project and OAuth Consent Screen:**  You need a Google Cloud project and configured OAuth consent screen to use Google Sign-In.
-*   **Mobile Device/Emulator:**  An Android or iOS device or an emulator/simulator for testing.
+*   **Mobile Device/Emulator:** An Android or iOS device or an emulator/simulator for testing.
 
 ## Setup and Installation
 
-1.  **Clone the repository:**
-
-    ```bash
-    git clone <repository-url>  # Replace <repository-url> with the actual URL
-    cd <project-directory>  # Replace <project-directory> with the project directory
-    ```
-
-2.  **Install dependencies:**
-
-    ```bash
-    npm install
-    # or
-    yarn install
-    ```
-
-3.  **Firebase Configuration:**
-
-    *   Create a Firebase project in the Firebase console ([https://console.firebase.google.com/](https://console.firebase.google.com/)).
-    *   Add a web app to your Firebase project. You'll get the `firebaseConfig` object.
-    *   Enable "Google" as a sign-in method in the Firebase console's Authentication section.
-    *   **Important Google Cloud Configuration:** Configure your OAuth consent screen in the Google Cloud Console ([https://console.cloud.google.com/](https://console.cloud.google.com/)). Set your app name, user support email, authorized domains (the domain of your Firebase project - often `firebaseapp.com`), and any required scopes (profile, email, etc.).
-    *   **Android Setup (Required for Android):** If you're building for Android, add your app's SHA-1 and SHA-256 fingerprints to your Firebase project's settings. You generate these fingerprints using `keytool` (see Firebase docs for detailed instructions).
-    *   **iOS Setup (Optional for iOS):**  If building for iOS, register your app's bundle identifier in the Firebase project and configure the appropriate iOS client ID.
-    *   Create a `firebaseConfig.js` file (or similar) in your project and add your Firebase configuration:
-
-   ```javascript
-    // firebaseConfig.js
-    export const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-    ```
-
-    *   **Important**: This is a *crucial* step. Make sure your `firebaseConfig.js` contains your *actual* Firebase configuration data.
-
-4.  **Run the app:**
-
-    ```bash
-    npx expo start
-    # or
-    yarn start
-    ```
-
-    This will start the Expo development server. You can then scan the QR code with your Expo Go app on your mobile device or use an emulator/simulator.
+1.  **Clone the repository.**
+2.  **Install dependencies** using `npm install` or `yarn install`.
+3.  **Configure Firebase** by creating a `firebase.js` file and adding your project's configuration details. For Google Sign-In, ensure your platform-specific client IDs are configured.
+4.  **Run the app** using `npx expo start`.
 
 ## Project Structure
 
-
-FiBear-App/
+```
+fibear-app/
 ├── assets/
-│ ├── images/
-│ │ ├── logo.png
-│ │ ├── getstarted.jpg
-│ │ ├── ... other images
-│ ├── ... other assets (fonts, etc.)
-├── components/ (optional - reusable components)
-│ ├── ...
-├── config/
-│ ├── firebaseConfig.js (Firebase configuration)
-├── navigation/ (optional - navigation setup files if separate)
-│ ├── ...
-├── screens/
-│ ├── SplashScreen2.js
-│ ├── GetStartedScreen.js
-│ ├── SignUpScreen.js
-│ ├── HomeScreen.js
-│ ├── ... other screens
-├── App.js (main entry point - app navigator)
-├── app.json (Expo configuration)
+│   ├── fonts/
+│   │   └── Kufam-SemiBoldItalic.ttf
+│   └── images/
+│       ├── logo.png
+│       └── on-boarding-image.png
+├── src/
+│   ├── components/
+│   │   ├── FormButton.js
+│   │   ├── FormInput.js
+│   │   └── SocialButton.js
+│   ├── constants/
+│   │   └── theme.js
+│   ├── context/
+│   │   └── AuthProvider.js
+│   ├── navigation/
+│   │   ├── AppStack.js
+│   │   ├── AuthStack.js
+│   │   └── Routes.js
+│   ├── screens/
+│   │   ├── HomeScreen.js
+│   │   ├── LoginScreen.js
+│   │   └── SignupScreen.js
+│   └── utils/
+│       └── firebase.js
+├── App.js
+├── app.json
 ├── package.json
-├── README.md (this file)
-└── ... other files
-
-Generated code
-## Code Overview
-
-*   **`App.js`:**  Sets up the app's navigation structure using `react-navigation/native`, defining the screens and their routes. Starts with the Splash Screen.
-*   **`screens/SplashScreen2.js`:**  Displays the initial splash screen with a logo and a "Get Started" button. It uses animations.
-*   **`screens/GetStartedScreen.js`:**  Provides the entry point for users. Offers options for Sign Up, Login, and Google Sign-In. Handles initial Google Sign-In functionality.
-*   **`screens/SignUpScreen.js`:**  Handles the user registration process.  Includes form validation and Firebase authentication integration.  Uses `AsyncStorage` for the `rememberMe` checkbox.
-*   **`screens/HomeScreen.js`:**  Displays the main content after successful login. Shows user information. Includes a skeleton loader for a better user experience while data loads.
-*   **`config/firebaseConfig.js`:** Contains the Firebase configuration details.  This file *must* be present and correctly configured for the app to connect to Firebase.
-
-## Key Functionality and How to Use
-
-*   **Navigation:**  The app uses `react-navigation` to manage navigation between screens.
-*   **Authentication:** Users can sign up and log in using email and password. The "Remember Me" functionality in the login screen stores credentials using `AsyncStorage`. Google sign-in is partially implemented.
-*   **Firebase Integration:** Firebase Authentication is used for user registration, login, and Google Sign-In. The app connects to your specified Firebase project.
-*   **Splash Screen:** The app starts with a splash screen for a better user experience.
-*   **Home Screen:** Presents a basic home screen after login with a skeleton loader.
-
-## Important Considerations and Next Steps
-
-*   **Google Sign-In Implementation:** The Google Sign-In integration in `GetStartedScreen.js` and `SignUpScreen.js` is partially complete.  You *must* implement the Expo Auth Session's `useAuthRequest` hook and the related logic to handle the authentication flow correctly.  Make sure you have your Google Cloud credentials properly set up.
-*   **Error Handling:** The app includes basic error handling. Implement more comprehensive error handling to provide a more robust user experience and handle authentication failures, storage errors, and network issues.  Display user-friendly error messages.
-*   **Data Validation:** Implement stronger input validation in the `SignUpScreen.js` to validate email formats, password complexity, and other relevant fields.
-*   **UI/UX Enhancements:** Improve the UI and UX of the app through additional styling, animations, and user interface elements. Refine the design for a better overall experience.
-*   **Firebase Data Storage:** Consider adding Firebase Realtime Database or Firestore to store user-related data, application settings, or other information.
-*   **Further Navigation:** Implement the functionality for the drawer menu in the `HomeScreen`.
-*   **Security:** Review your code for potential security vulnerabilities and follow best practices for mobile development.
-*   **Testing:** Implement unit tests and user interface tests to ensure the app functions correctly.
+└── README.md
+```
 
 ## Contributing
 
-Contributions are welcome! If you would like to contribute to this project, please:
-
-1.  Fork the repository.
-2.  Create a new branch for your feature or bug fix.
-3.  Make your changes and commit them.
-4.  Submit a pull request.
-
-## License
+Contributions are welcome! If you would like to contribute to this project, please fork the repository and submit a pull request.

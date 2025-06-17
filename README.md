@@ -1,6 +1,6 @@
-# <span style="color:#0aada8;">FiBear Network Corp.</span> Mobile App
+# <span style="color:#00A9B5;">FiBear Network Corp.</span> Mobile App
 
-> This mobile application, developed with **React Native** and **Expo**, provides a modern and user-friendly interface for managing FiBear Network Corp. services. The app is built with a focus on security and a seamless user experience, leveraging *Firebase* for robust backend authentication. Its design is clean and intuitive, with a professional aesthetic defined by its distinctive <span style="color:#051d5f;">`Kufam`</span> and <span style="color:#333333;">`Lato`</span> typography.
+> This mobile application, developed with **React Native** and **Expo**, provides a modern and user-friendly interface for managing FiBear Network Corp. services. The app is built with a focus on security and a seamless user experience, leveraging *Firebase* for robust backend authentication. Its design is clean and intuitive, with a professional aesthetic defined by its distinctive typography.
 
 ---
 
